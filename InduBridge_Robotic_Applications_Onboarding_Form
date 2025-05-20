@@ -1,0 +1,646 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>InduBridge Robotic Applications Onboarding Form</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f3f4f6; /* Light gray background */
+        }
+        /* Custom styling for focus states */
+        input:focus, textarea:focus, select:focus {
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(66, 153, 225, 0.5); /* Blue focus ring */
+            border-color: #4299e1; /* Blue border */
+        }
+        /* Hide default checkbox/radio and style custom ones */
+        input[type="checkbox"], input[type="radio"] {
+            -webkit-appearance: none;
+            -moz-appearance: none;
+            appearance: none;
+            display: inline-block;
+            width: 1.25rem;
+            height: 1.25rem;
+            border: 2px solid #d1d5db; /* Light gray border */
+            border-radius: 0.25rem; /* Rounded corners for checkboxes */
+            cursor: pointer;
+            vertical-align: middle;
+            position: relative;
+        }
+        input[type="radio"] {
+            border-radius: 50%; /* Make radios round */
+        }
+        input[type="checkbox"]:checked {
+            background-color: #3b82f6; /* Blue background when checked */
+            border-color: #3b82f6;
+        }
+        input[type="radio"]:checked {
+            background-color: #3b82f6; /* Blue background when checked */
+            border-color: #3b82f6;
+        }
+        input[type="checkbox"]:checked::after {
+            content: '\2713'; /* Checkmark character */
+            color: white;
+            font-size: 0.875rem;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+        }
+        input[type="radio"]:checked::after {
+            content: '';
+            width: 0.5rem;
+            height: 0.5rem;
+            background-color: white;
+            border-radius: 50%;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+        }
+
+        /* Styling for the message box */
+        .message-box {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background-color: #4CAF50; /* Green */
+            color: white;
+            padding: 15px 25px;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            z-index: 1000;
+            opacity: 0;
+            transition: opacity 0.3s ease-in-out;
+        }
+        .message-box.show {
+            opacity: 1;
+        }
+    </style>
+</head>
+<body class="antialiased p-4 sm:p-6 md:p-8">
+    <div class="max-w-4xl mx-auto bg-white rounded-xl shadow-lg p-6 sm:p-8 md:p-10 mb-10">
+        <header class="text-center mb-8">
+            <h1 class="text-3xl sm:text-4xl font-extrabold text-gray-800 mb-2">InduBridge</h1>
+            <h2 class="text-xl sm:text-2xl font-semibold text-blue-600 mb-4">Robotic Applications Client Onboarding Form</h2>
+            <p class="text-gray-600 text-sm sm:text-base">For Robotic System Integration & Automation Deployment</p>
+        </header>
+
+        <form id="onboardingForm" class="space-y-8">
+            <section class="bg-gray-50 p-6 rounded-lg shadow-sm">
+                <h3 class="text-2xl font-bold text-gray-700 mb-6 border-b-2 border-blue-300 pb-2">Section A: Company Profile & Contact Information</h3>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                        <label for="companyName" class="block text-sm font-medium text-gray-700 mb-1">Company Name</label>
+                        <input type="text" id="companyName" name="companyName" placeholder="Your Company Name"
+                               class="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
+                    </div>
+                    <div>
+                        <label for="contactPerson" class="block text-sm font-medium text-gray-700 mb-1">Primary Contact Person</label>
+                        <input type="text" id="contactPerson" name="contactPerson" placeholder="Full Name"
+                               class="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
+                    </div>
+                    <div class="md:col-span-2">
+                        <label for="emailPhone" class="block text-sm font-medium text-gray-700 mb-1">Email Address / Phone Number</label>
+                        <input type="text" id="emailPhone" name="emailPhone" placeholder="email@example.com or +1234567890"
+                               class="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
+                    </div>
+                    <div class="md:col-span-2">
+                        <label for="facilityLocations" class="block text-sm font-medium text-gray-700 mb-1">Facility Location(s)</label>
+                        <textarea id="facilityLocations" name="facilityLocations" rows="3" placeholder="e.g., New York, NY; Los Angeles, CA"
+                                  class="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm"></textarea>
+                    </div>
+                    <div>
+                        <label for="industryType" class="block text-sm font-medium text-gray-700 mb-1">Industry Type</label>
+                        <select id="industryType" name="industryType"
+                                class="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
+                            <option value="">Select an industry</option>
+                            <option value="Food & Beverage">Food & Beverage</option>
+                            <option value="Automotive">Automotive</option>
+                            <option value="Chemical">Chemical</option>
+                            <option value="Discrete Manufacturing">Discrete Manufacturing</option>
+                            <option value="Other">Other (Please specify in notes)</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label for="numEmployees" class="block text-sm font-medium text-gray-700 mb-1">Number of Employees on Shopfloor</label>
+                        <input type="number" id="numEmployees" name="numEmployees" min="0" placeholder="e.g., 50"
+                               class="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
+                    </div>
+                    <div class="md:col-span-2">
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Working Shifts per Day</label>
+                        <div class="flex flex-wrap gap-4">
+                            <label class="inline-flex items-center">
+                                <input type="radio" name="workingShifts" value="1" class="form-radio">
+                                <span class="ml-2 text-gray-700">1 shift</span>
+                            </label>
+                            <label class="inline-flex items-center">
+                                <input type="radio" name="workingShifts" value="2" class="form-radio">
+                                <span class="ml-2 text-gray-700">2 shifts</span>
+                            </label>
+                            <label class="inline-flex items-center">
+                                <input type="radio" name="workingShifts" value="3" class="form-radio">
+                                <span class="ml-2 text-gray-700">3 shifts</span>
+                            </label>
+                            <label class="inline-flex items-center">
+                                <input type="radio" name="workingShifts" value="Other" class="form-radio">
+                                <span class="ml-2 text-gray-700">Other</span>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <section class="bg-gray-50 p-6 rounded-lg shadow-sm">
+                <h3 class="text-2xl font-bold text-gray-700 mb-6 border-b-2 border-blue-300 pb-2">Section B: Project Scope & Robotic Integration Maturity</h3>
+
+                <div class="mb-6">
+                    <label class="block text-sm font-medium text-gray-700 mb-2">What is your primary objective for this Robotic Application project? (Select all that apply)</label>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                        <label class="inline-flex items-center">
+                            <input type="checkbox" name="objective" value="Cycle Time Reduction" class="form-checkbox">
+                            <span class="ml-2 text-gray-700">Cycle Time Reduction</span>
+                        </label>
+                        <label class="inline-flex items-center">
+                            <input type="checkbox" name="objective" value="Throughput Increase" class="form-checkbox">
+                            <span class="ml-2 text-gray-700">Throughput Increase</span>
+                        </label>
+                        <label class="inline-flex items-center">
+                            <input type="checkbox" name="objective" value="Labor Cost Savings" class="form-checkbox">
+                            <span class="ml-2 text-gray-700">Labor Cost Savings</span>
+                        </label>
+                        <label class="inline-flex items-center">
+                            <input type="checkbox" name="objective" value="Quality Improvement" class="form-checkbox">
+                            <span class="ml-2 text-gray-700">Quality Improvement</span>
+                        </label>
+                        <label class="inline-flex items-center">
+                            <input type="checkbox" name="objective" value="Safety Enhancement" class="form-checkbox">
+                            <span class="ml-2 text-gray-700">Safety Enhancement</span>
+                        </label>
+                        <label class="inline-flex items-center">
+                            <input type="checkbox" name="objective" value="OEE Improvement" class="form-checkbox">
+                            <span class="ml-2 text-gray-700">OEE Improvement</span>
+                        </label>
+                    </div>
+                </div>
+
+                <div class="mb-6">
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Current Robotic Integration Level</label>
+                    <div class="flex flex-wrap gap-4">
+                        <label class="inline-flex items-center">
+                            <input type="radio" name="robotIntegrationLevel" value="No automation" class="form-radio">
+                            <span class="ml-2 text-gray-700">No automation</span>
+                        </label>
+                        <label class="inline-flex items-center">
+                            <input type="radio" name="robotIntegrationLevel" value="Partial automation" class="form-radio">
+                            <span class="ml-2 text-gray-700">Partial automation</span>
+                        </label>
+                        <label class="inline-flex items-center">
+                            <input type="radio" name="robotIntegrationLevel" value="Extensive automation" class="form-radio">
+                            <span class="ml-2 text-gray-700">Extensive automation</span>
+                        </label>
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Preferred Timeline for Implementation</label>
+                    <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
+                        <label class="inline-flex items-center">
+                            <input type="radio" name="timeline" value="<3 months" class="form-radio">
+                            <span class="ml-2 text-gray-700">&lt;3 months</span>
+                        </label>
+                        <label class="inline-flex items-center">
+                            <input type="radio" name="timeline" value="3-6 months" class="form-radio">
+                            <span class="ml-2 text-gray-700">3-6 months</span>
+                        </label>
+                        <label class="inline-flex items-center">
+                            <input type="radio" name="timeline" value="6-12 months" class="form-radio">
+                            <span class="ml-2 text-gray-700">6-12 months</span>
+                        </label>
+                        <label class="inline-flex items-center">
+                            <input type="radio" name="timeline" value=">12 months" class="form-radio">
+                            <span class="ml-2 text-gray-700">&gt;12 months</span>
+                        </label>
+                    </div>
+                </div>
+            </section>
+
+            <section class="bg-gray-50 p-6 rounded-lg shadow-sm">
+                <h3 class="text-2xl font-bold text-gray-700 mb-6 border-b-2 border-blue-300 pb-2">Section C: Application Details & Technical Requirements</h3>
+
+                <div class="mb-6">
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Which robotic applications are within scope? (Select all that apply)</label>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                        <label class="inline-flex items-center">
+                            <input type="checkbox" name="robotApplication" value="Palletizing" class="form-checkbox">
+                            <span class="ml-2 text-gray-700">Palletizing</span>
+                        </label>
+                        <label class="inline-flex items-center">
+                            <input type="checkbox" name="robotApplication" value="Welding" class="form-checkbox">
+                            <span class="ml-2 text-gray-700">Welding</span>
+                        </label>
+                        <label class="inline-flex items-center">
+                            <input type="checkbox" name="robotApplication" value="Case Erection" class="form-checkbox">
+                            <span class="ml-2 text-gray-700">Case Erection</span>
+                        </label>
+                        <label class="inline-flex items-center">
+                            <input type="checkbox" name="robotApplication" value="CNC Machine Tending" class="form-checkbox">
+                            <span class="ml-2 text-gray-700">CNC Machine Tending</span>
+                        </label>
+                        <label class="inline-flex items-center">
+                            <input type="checkbox" name="robotApplication" value="Assembly" class="form-checkbox">
+                            <span class="ml-2 text-gray-700">Assembly</span>
+                        </label>
+                        <label class="inline-flex items-center">
+                            <input type="checkbox" name="robotApplication" value="Material Handling" class="form-checkbox">
+                            <span class="ml-2 text-gray-700">Material Handling</span>
+                        </label>
+                        <label class="inline-flex items-center">
+                            <input type="checkbox" name="robotApplication" value="Inspection" class="form-checkbox">
+                            <span class="ml-2 text-gray-700">Inspection</span>
+                        </label>
+                        <label class="inline-flex items-center">
+                            <input type="checkbox" name="robotApplication" value="Painting" class="form-checkbox">
+                            <span class="ml-2 text-gray-700">Painting</span>
+                        </label>
+                        <label class="inline-flex items-center">
+                            <input type="checkbox" name="robotApplication" value="Other" class="form-checkbox" id="otherApplicationCheckbox">
+                            <span class="ml-2 text-gray-700">Other (specify)</span>
+                        </label>
+                    </div>
+                    <div id="otherApplicationDiv" class="hidden mt-3">
+                        <label for="otherApplication" class="block text-sm font-medium text-gray-700 mb-1">Specify Other Application</label>
+                        <textarea id="otherApplication" name="otherApplication" rows="2" placeholder="Describe your specific robotic application"
+                                  class="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm"></textarea>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+                    <div>
+                        <label for="robotType" class="block text-sm font-medium text-gray-700 mb-1">Type of Robot(s) Preferred/Existing</label>
+                        <select id="robotType" name="robotType"
+                                class="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
+                            <option value="">Select robot type</option>
+                            <option value="Articulated">Articulated</option>
+                            <option value="SCARA">SCARA</option>
+                            <option value="Delta">Delta</option>
+                            <option value="Collaborative">Collaborative (Cobot)</option>
+                            <option value="Cartesian">Cartesian</option>
+                            <option value="Other">Other (Please specify in notes)</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label for="payloadCapacity" class="block text-sm font-medium text-gray-700 mb-1">Payload Capacity Required (kg)</label>
+                        <input type="number" id="payloadCapacity" name="payloadCapacity" min="0" placeholder="e.g., 10"
+                               class="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
+                    </div>
+                    <div>
+                        <label for="reachRequired" class="block text-sm font-medium text-gray-700 mb-1">Reach Required (mm)</label>
+                        <input type="number" id="reachRequired" name="reachRequired" min="0" placeholder="e.g., 1300"
+                               class="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
+                    </div>
+                    <div>
+                        <label for="workpieceMaterials" class="block text-sm font-medium text-gray-700 mb-1">Workpiece Material(s) (if applicable)</label>
+                        <input type="text" id="workpieceMaterials" name="workpieceMaterials" placeholder="e.g., Steel, Aluminum, Plastic"
+                               class="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
+                    </div>
+                </div>
+
+                <div class="mb-6">
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Integration with Existing Systems (Select all that apply)</label>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                        <label class="inline-flex items-center">
+                            <input type="checkbox" name="integrationSystems" value="ERP (Enterprise Resource Planning)" class="form-checkbox">
+                            <span class="ml-2 text-gray-700">ERP (Enterprise Resource Planning)</span>
+                        </label>
+                        <label class="inline-flex items-center">
+                            <input type="checkbox" name="integrationSystems" value="MES (Manufacturing Execution System)" class="form-checkbox">
+                            <span class="ml-2 text-gray-700">MES (Manufacturing Execution System)</span>
+                        </label>
+                        <label class="inline-flex items-center">
+                            <input type="checkbox" name="integrationSystems" value="PLC (Programmable Logic Controller)" class="form-checkbox">
+                            <span class="ml-2 text-gray-700">PLC (Programmable Logic Controller)</span>
+                        </label>
+                        <label class="inline-flex items-center">
+                            <input type="checkbox" name="integrationSystems" value="Vision Systems" class="form-checkbox">
+                            <span class="ml-2 text-gray-700">Vision Systems</span>
+                        </label>
+                        <label class="inline-flex items-center">
+                            <input type="checkbox" name="integrationSystems" value="Conveyors/Material Handling Systems" class="form-checkbox">
+                            <span class="ml-2 text-gray-700">Conveyors/Material Handling Systems</span>
+                        </label>
+                        <label class="inline-flex items-center">
+                            <input type="checkbox" name="integrationSystems" value="Other" class="form-checkbox" id="otherIntegrationCheckbox">
+                            <span class="ml-2 text-gray-700">Other (specify)</span>
+                        </label>
+                    </div>
+                    <div id="otherIntegrationDiv" class="hidden mt-3">
+                        <label for="otherIntegration" class="block text-sm font-medium text-gray-700 mb-1">Specify Other Integration Systems</label>
+                        <textarea id="otherIntegration" name="otherIntegration" rows="2" placeholder="Describe other systems for integration"
+                                  class="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm"></textarea>
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Safety Requirements/Standards (Select all that apply)</label>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                        <label class="inline-flex items-center">
+                            <input type="checkbox" name="safetyStandards" value="ISO 10218 (Industrial Robot Safety)" class="form-checkbox">
+                            <span class="ml-2 text-gray-700">ISO 10218 (Industrial Robot Safety)</span>
+                        </label>
+                        <label class="inline-flex items-center">
+                            <input type="checkbox" name="safetyStandards" value="ANSI/RIA R15.06 (Industrial Robot Safety)" class="form-checkbox">
+                            <span class="ml-2 text-gray-700">ANSI/RIA R15.06 (Industrial Robot Safety)</span>
+                        </label>
+                        <label class="inline-flex items-center">
+                            <input type="checkbox" name="safetyStandards" value="Collaborative Robot Safety (ISO/TS 15066)" class="form-checkbox">
+                            <span class="ml-2 text-gray-700">Collaborative Robot Safety (ISO/TS 15066)</span>
+                        </label>
+                        <label class="inline-flex items-center">
+                            <input type="checkbox" name="safetyStandards" value="OSHA Guidelines" class="form-checkbox">
+                            <span class="ml-2 text-gray-700">OSHA Guidelines</span>
+                        </label>
+                        <label class="inline-flex items-center">
+                            <input type="checkbox" name="safetyStandards" value="Other" class="form-checkbox" id="otherSafetyCheckbox">
+                            <span class="ml-2 text-gray-700">Other (specify)</span>
+                        </label>
+                    </div>
+                    <div id="otherSafetyDiv" class="hidden mt-3">
+                        <label for="otherSafety" class="block text-sm font-medium text-gray-700 mb-1">Specify Other Safety Requirements/Standards</label>
+                        <textarea id="otherSafety" name="otherSafety" rows="2" placeholder="Describe other safety requirements or standards"
+                                  class="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm"></textarea>
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Expected Outcomes or KPIs to Track: (Select all that apply)</label>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-3">
+                        <label class="inline-flex items-center">
+                            <input type="checkbox" name="kpis" value="Cycle Time Reduction" class="form-checkbox">
+                            <span class="ml-2 text-gray-700">Cycle Time Reduction</span>
+                        </label>
+                        <label class="inline-flex items-center">
+                            <input type="checkbox" name="kpis" value="Throughput Increase" class="form-checkbox">
+                            <span class="ml-2 text-gray-700">Throughput Increase</span>
+                        </label>
+                        <label class="inline-flex items-center">
+                            <input type="checkbox" name="kpis" value="Labor Cost Savings" class="form-checkbox">
+                            <span class="ml-2 text-gray-700">Labor Cost Savings</span>
+                        </label>
+                        <label class="inline-flex items-center">
+                            <input type="checkbox" name="kpis" value="Quality Improvement" class="form-checkbox">
+                            <span class="ml-2 text-gray-700">Quality Improvement</span>
+                        </label>
+                        <label class="inline-flex items-center">
+                            <input type="checkbox" name="kpis" value="Safety Enhancement" class="form-checkbox">
+                            <span class="ml-2 text-gray-700">Safety Enhancement</span>
+                        </label>
+                        <label class="inline-flex items-center">
+                            <input type="checkbox" name="kpis" value="Custom KPIs" class="form-checkbox" id="customKpisCheckbox">
+                            <span class="ml-2 text-gray-700">Custom KPIs (specify)</span>
+                        </label>
+                    </div>
+                    <div id="customKpisDiv" class="hidden">
+                        <label for="customKpis" class="block text-sm font-medium text-gray-700 mb-1">Specify Custom KPIs</label>
+                        <textarea id="customKpis" name="customKpis" rows="2" placeholder="e.g., Robot Uptime, MTBF"
+                                  class="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm"></textarea>
+                    </div>
+                </div>
+            </section>
+
+            <div class="flex flex-col sm:flex-row justify-center gap-4 pt-4">
+                <button type="submit"
+                        class="px-8 py-3 bg-blue-600 text-white font-semibold rounded-lg shadow-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition duration-300 ease-in-out">
+                    Submit Onboarding Form
+                </button>
+                <button type="button" id="clearFormButton"
+                        class="px-8 py-3 bg-red-500 text-white font-semibold rounded-lg shadow-md hover:bg-red-600 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 transition duration-300 ease-in-out">
+                    Clear All Selections
+                </button>
+            </div>
+        </form>
+    </div>
+
+    <div id="messageBox" class="message-box hidden"></div>
+
+    <script>
+        // Ensure jsPDF is available globally (it usually is when loaded via UMD)
+        const { jsPDF } = window.jspdf;
+
+        // Function to display a message box
+        function showMessageBox(message, type = 'success') {
+            const messageBox = document.getElementById('messageBox');
+            messageBox.textContent = message;
+            messageBox.className = 'message-box show'; // Reset classes and add 'show'
+
+            if (type === 'success') {
+                messageBox.style.backgroundColor = '#4CAF50'; // Green
+            } else if (type === 'error') {
+                messageBox.style.backgroundColor = '#f44336'; // Red
+            } else {
+                messageBox.style.backgroundColor = '#2196F3'; // Blue (info)
+            }
+
+            setTimeout(() => {
+                messageBox.classList.remove('show');
+            }, 3000); // Hide after 3 seconds
+        }
+
+
+        // JavaScript for conditional display of 'Other' fields and 'Custom KPIs'
+        document.addEventListener('DOMContentLoaded', function() {
+            const otherApplicationCheckbox = document.getElementById('otherApplicationCheckbox');
+            const otherApplicationDiv = document.getElementById('otherApplicationDiv');
+            const otherApplicationTextarea = document.getElementById('otherApplication');
+
+            const otherIntegrationCheckbox = document.getElementById('otherIntegrationCheckbox');
+            const otherIntegrationDiv = document.getElementById('otherIntegrationDiv');
+            const otherIntegrationTextarea = document.getElementById('otherIntegration');
+
+            const otherSafetyCheckbox = document.getElementById('otherSafetyCheckbox');
+            const otherSafetyDiv = document.getElementById('otherSafetyDiv');
+            const otherSafetyTextarea = document.getElementById('otherSafety');
+
+            const customKpisCheckbox = document.getElementById('customKpisCheckbox');
+            const customKpisDiv = document.getElementById('customKpisDiv');
+            const customKpisTextarea = document.getElementById('customKpis');
+
+            const clearFormButton = document.getElementById('clearFormButton');
+            const onboardingForm = document.getElementById('onboardingForm');
+
+            // Function to toggle visibility for a given div and input/textarea
+            function toggleVisibility(checkbox, div, input) {
+                if (checkbox.checked) {
+                    div.classList.remove('hidden');
+                    input.setAttribute('required', 'required');
+                } else {
+                    div.classList.add('hidden');
+                    input.removeAttribute('required');
+                    input.value = ''; // Clear value when hidden
+                }
+            }
+
+            // Add event listeners for conditional fields
+            otherApplicationCheckbox.addEventListener('change', () => toggleVisibility(otherApplicationCheckbox, otherApplicationDiv, otherApplicationTextarea));
+            otherIntegrationCheckbox.addEventListener('change', () => toggleVisibility(otherIntegrationCheckbox, otherIntegrationDiv, otherIntegrationTextarea));
+            otherSafetyCheckbox.addEventListener('change', () => toggleVisibility(otherSafetyCheckbox, otherSafetyDiv, otherSafetyTextarea));
+            customKpisCheckbox.addEventListener('change', () => toggleVisibility(customKpisCheckbox, customKpisDiv, customKpisTextarea));
+
+
+            // Function to clear all form fields
+            function clearFormFields() {
+                onboardingForm.reset(); // Resets all form elements to their initial values
+
+                // Manually trigger toggles to hide conditional fields and clear their values
+                toggleVisibility(otherApplicationCheckbox, otherApplicationDiv, otherApplicationTextarea);
+                toggleVisibility(otherIntegrationCheckbox, otherIntegrationDiv, otherIntegrationTextarea);
+                toggleVisibility(otherSafetyCheckbox, otherSafetyDiv, otherSafetyTextarea);
+                toggleVisibility(customKpisCheckbox, customKpisDiv, customKpisTextarea);
+
+                showMessageBox('Form cleared successfully!', 'info');
+            }
+
+            // Add event listener for the clear button
+            clearFormButton.addEventListener('click', clearFormFields);
+
+            // Initial check on page load
+            toggleVisibility(otherApplicationCheckbox, otherApplicationDiv, otherApplicationTextarea);
+            toggleVisibility(otherIntegrationCheckbox, otherIntegrationDiv, otherIntegrationTextarea);
+            toggleVisibility(otherSafetyCheckbox, otherSafetyDiv, otherSafetyTextarea);
+            toggleVisibility(customKpisCheckbox, customKpisDiv, customKpisTextarea);
+
+
+            // Handle form submission for PDF generation
+            onboardingForm.addEventListener('submit', function(event) {
+                event.preventDefault(); // Prevent default form submission
+
+                // Initialize jsPDF
+                const doc = new jsPDF();
+                let yPos = 20; // Initial Y position for text
+
+                // Add title
+                doc.setFontSize(22);
+                doc.text('InduBridge Robotic Applications Onboarding Form', 105, yPos, { align: 'center' });
+                yPos += 15;
+
+                doc.setFontSize(12);
+                doc.text('For Robotic System Integration & Automation Deployment', 105, yPos, { align: 'center' });
+                yPos += 20;
+
+                // Function to add a section title to PDF
+                function addSectionTitle(title) {
+                    doc.setFontSize(16);
+                    doc.setTextColor(51, 51, 51); // Dark gray
+                    doc.text(title, 20, yPos);
+                    yPos += 8;
+                    doc.setDrawColor(66, 153, 225); // Blue for underline
+                    doc.setLineWidth(0.5);
+                    doc.line(20, yPos, 190, yPos); // Underline
+                    yPos += 10;
+                }
+
+                // Function to add a field and its value to PDF
+                function addField(label, value) {
+                    doc.setFontSize(11);
+                    doc.setTextColor(75, 85, 99); // Medium gray
+                    doc.text(`${label}:`, 25, yPos);
+                    doc.setTextColor(0, 0, 0); // Black for value
+                    // Ensure value is a string, handle arrays
+                    const displayValue = Array.isArray(value) ? value.join(', ') : (value || 'N/A');
+                    const textWidth = doc.getStringUnitWidth(label + ':') * doc.internal.getFontSize() / doc.internal.scaleFactor;
+                    const startX = 25 + textWidth + 5; // Start value after label + some padding
+                    doc.text(displayValue, 25, yPos + 6); // Place value on a new line for better readability
+                    yPos += 12; // Increase Y position for next field
+                    if (yPos > 280) { // Check for page overflow
+                        doc.addPage();
+                        yPos = 20;
+                    }
+                }
+
+                // Get form data
+                const form = event.target;
+                const formData = new FormData(form);
+                const data = {};
+
+                // Process text/number/select inputs and textareas
+                form.querySelectorAll('input[type="text"], input[type="number"], textarea, select').forEach(input => {
+                    if (input.id) { // Only process elements with an ID
+                        data[input.id] = input.value;
+                    }
+                });
+
+                // Process radio buttons
+                form.querySelectorAll('input[type="radio"]:checked').forEach(radio => {
+                    data[radio.name] = radio.value;
+                });
+
+                // Process checkboxes
+                form.querySelectorAll('input[type="checkbox"]').forEach(checkbox => {
+                    if (checkbox.checked) {
+                        if (!data[checkbox.name]) {
+                            data[checkbox.name] = [];
+                        }
+                        data[checkbox.name].push(checkbox.value);
+                    }
+                });
+
+
+                // Section A Data
+                addSectionTitle('Section A: Company Profile & Contact Information');
+                addField('Company Name', data.companyName);
+                addField('Primary Contact Person', data.contactPerson);
+                addField('Email Address / Phone Number', data.emailPhone);
+                addField('Facility Location(s)', data.facilityLocations);
+                addField('Industry Type', data.industryType);
+                addField('Number of Employees on Shopfloor', data.numEmployees);
+                addField('Working Shifts per Day', data.workingShifts);
+
+                yPos += 10; // Add some space between sections
+
+                // Section B Data
+                addSectionTitle('Section B: Project Scope & Robotic Integration Maturity');
+                addField('Primary Objective for Robotic Application project', data.objective);
+                addField('Current Robotic Integration Level', data.robotIntegrationLevel);
+                addField('Preferred Timeline for Implementation', data.timeline);
+
+                yPos += 10; // Add some space between sections
+
+                // Section C Data
+                addSectionTitle('Section C: Application Details & Technical Requirements');
+                addField('Robotic Applications within scope', data.robotApplication);
+                if (data.robotApplication && data.robotApplication.includes('Other')) {
+                    addField('Other Application Specified', data.otherApplication);
+                }
+                addField('Type of Robot(s) Preferred/Existing', data.robotType);
+                addField('Payload Capacity Required (kg)', data.payloadCapacity);
+                addField('Reach Required (mm)', data.reachRequired);
+                addField('Workpiece Material(s)', data.workpieceMaterials);
+                addField('Integration with Existing Systems', data.integrationSystems);
+                if (data.integrationSystems && data.integrationSystems.includes('Other')) {
+                    addField('Other Integration Systems Specified', data.otherIntegration);
+                }
+                addField('Safety Requirements/Standards', data.safetyStandards);
+                if (data.safetyStandards && data.safetyStandards.includes('Other')) {
+                    addField('Other Safety Requirements/Standards Specified', data.otherSafety);
+                }
+                addField('Expected Outcomes or KPIs to Track', data.kpis);
+                if (data.kpis && data.kpis.includes('Custom KPIs')) {
+                    addField('Custom KPIs Specified', data.customKpis);
+                }
+
+                // Save the PDF
+                doc.save('InduBridge_Robotic_Applications_Onboarding_Form.pdf');
+
+                showMessageBox('PDF generated successfully!', 'success');
+            });
+        });
+    </script>
+</body>
+</html>
